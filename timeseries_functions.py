@@ -18,6 +18,7 @@ def plot_series_and_differences(series, ax, num_diff, title):
         ax[i].set_title('Difference # {}'.format(str(i)))
 
 def run_augmented_Dickey_Fuller_test(series, num_diffs=None):
+    "Test for stationarity on raw data and specified number of differences."
     test = sm.tsa.stattools.adfuller(series)
     if test[1] >= 0.05:
         print('The p-value for the series is: {p}, which is not significant'.\
