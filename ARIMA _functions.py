@@ -62,7 +62,7 @@ def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,
     plt.rcParams.update(params)
     fig = fitted_model.plot_predict(start=start, end=end, alpha=alpha)
     plt.show()
-    
+
 def plot_data_plus_ARIMA_predictions(data, order, start, end, typ=None, figsize=(10,10), title='', ylabel='', xlabel=''):
     results = ARIMA(data, order=order).fit()
     forecast = results.predict(start=start, end=end, typ=typ)
