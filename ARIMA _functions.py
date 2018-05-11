@@ -53,7 +53,8 @@ def plot_data_plus_ARIMA_predictions(data, order, start, end, typ='levels',\
     plt.xlabel(ylabel)
     plt.show()
 
-def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params, alpha=0.05, title=''):
+def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,\
+ alpha=0.05, title=''):
     start=start
     end=end
     fitted_model = ARIMA(train_data, order=order).fit()
@@ -63,7 +64,8 @@ def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,
     fig = fitted_model.plot_predict(start=start, end=end, alpha=alpha)
     plt.show()
 
-def plot_data_plus_ARIMA_predictions(data, order, start, end, typ=None, figsize=(10,10), title='', ylabel='', xlabel=''):
+def plot_data_plus_ARIMA_predictions(data, order, start, end, typ=None,\
+ figsize=(10,10), title='', ylabel='', xlabel=''):
     results = ARIMA(data, order=order).fit()
     forecast = results.predict(start=start, end=end, typ=typ)
     data_plus_forecast = pd.concat([data, forecast], axis=1)
@@ -89,7 +91,7 @@ def test_rolling_ARIMA_forecast(train_data, test_data, order):
         history.append(observed)
     return predictions, test
 
-def plot_rolling_ARIMA_forecast(train_data, test_data, order, title):
+def plot_rolling_ARIMA_forecast(train_data, test_data, order, title=''):
     "Calculates and plots rolling ARIMA forecast"
     predicted, expected = test_rolling_ARIMA_forecast(train_data, test_data, order)
     predictions = np.hstack(predicted)
