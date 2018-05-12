@@ -3,10 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from statsmodels.graphics import tsaplots
 import statsmodels.api as sm
-from statsmodels.tsa.arima_model import ARIMA, ARMA
-from statsmodels.tsa.arima_process import ArmaProcess
-from statsmodels.stats.diagnostic import acorr_ljungbox
-from scipy import signal
+from statsmodels.tsa.arima_model import ARIMA, ARIMAResults
+
+###  data = pandas Series
 
 def get_ARIMA_model(data, order):
     "Fits ARIMA model"
@@ -28,7 +27,7 @@ def plot_ARIMA_model(data, order, start, end, title='', xlabel='', ylabel=''):
 
 def plot_ARIMA_resids(data, order, start, end, title='', xlabel='', ylabel=''):
     "Plots ARIMA model residuals"
-    results = ARIMA(data, order=order).fit().resid
+    residuals = ARIMAResults(data, order=order).fit().resid
     residuals.plot(figsize=(5,5))
     plt.title(title)
     plt.ylabel(xlabel)
