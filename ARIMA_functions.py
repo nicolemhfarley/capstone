@@ -7,6 +7,9 @@ from statsmodels.tsa.arima_model import ARIMA, ARIMAResults
 
 ###  data = pandas Series
 
+params = {'figure.figsize': [8,8],'axes.grid.axis': 'both', 'axes.grid': True, 'axes.labelsize': 'Medium', 'font.size': 12.0, \
+'lines.linewidth': 2}
+
 def get_ARIMA_model(data, order):
     "Fits ARIMA model"
     arima = ARIMA(data, order=order)
@@ -40,18 +43,6 @@ def get_ARIMA_forecast(data, order, start, end, typ=None):
     forecast = results.predict(start=start, end=end, typ=typ)
     return forecast
 
-def plot_data_plus_ARIMA_predictions(data, order, start, end, typ='levels',\
- figsize=(10,10), title='', ylabel='', xlabel=''):
-    "Make forecast and plot as extension of the existing time series data"
-    forecast = get_ARIMA_forecast(data, order, start, end, typ=typ)
-    data_plus_forecast = pd.concat([data, forecast], axis=1)
-    data_plus_forecast.columns = ['data', 'predicted']
-    data_plus_forecast.plot(figsize=(12,8), grid=True)
-    plt.title(title)
-    plt.ylabel(xlabel)
-    plt.xlabel(ylabel)
-    plt.show()
-
 def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,\
  alpha=0.05, title=''):
     start=start
@@ -63,7 +54,7 @@ def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,
     fig = fitted_model.plot_predict(start=start, end=end, alpha=alpha)
     plt.show()
 
-def plot_data_plus_ARIMA_predictions(data, order, start, end, typ=None,\
+def plot_data_plus_ARIMA_predictions(data, order, start, end, typ='levels',\
  figsize=(10,10), title='', ylabel='', xlabel=''):
     results = ARIMA(data, order=order).fit()
     forecast = results.predict(start=start, end=end, typ=typ)
@@ -90,18 +81,10 @@ def test_rolling_ARIMA_forecast(train_data, test_data, order):
         history.append(observed)
     return predictions, test
 
-def plot_rolling_ARIMA_forecast(train_data, test_data, order, title=''):
-    "Calculates and plots rolling ARIMA forecast"
-    predicted, expected = test_rolling_ARIMA_forecast(train_data, test_data, order)
-    predictions = np.hstack(predicted)
-    df = pd.DataFrame({'predicted': predictions, 'actual':test})
-    df.plot()
-    plt.title(title)
-    plt.show()
-
 def get_predictions_df_and_plot_rolling_ARIMA_forecast(train_data, test_data, \
 order, figsize=(10,5),title=''):
     "Calculates and plots rolling ARIMA forecast"
+    fitted_model = ARIMA(train_data, order=order).fit()
     predicted, expected = test_rolling_ARIMA_forecast(train_data, test_data, order)
     predictions = np.hstack(predicted)
     actual = pd.concat([train_data, test_data], axis=0 )
