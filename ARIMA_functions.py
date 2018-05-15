@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from statsmodels.graphics import tsaplots
 import statsmodels.api as sm
 from statsmodels.tsa.arima_model import ARIMA, ARIMAResults
+from sklearn.metrics import mean_squared_error
 
 ###  data = pandas Series
 
@@ -105,6 +106,42 @@ def plot_ARIMA_forecast_and_CI(train_data, test_data, order, start, end, params,
     plt.rcParams.update(params)
     fig = fitted_model.plot_predict(start=start, end=end, alpha=alpha)
     plt.show()
+
+def get_ARIMAX_predictions(data, order, start, end, exog=None, typ='levels'):
+    data = data.to_frame()
+    results = ARIMA(data, order=order, exog=exog).fit()
+    forecast = results.predict(start=start, end=end, exog=exog, typ=typ).to_frame()
+    data_plus_forecast = pd.merge(left=data, right=forecast, how='outer', left_index=True, right_index=True)
+    data_plus_forecast.columns = ['data', 'forecast']
+    return forecast, data_plus_forecast
+
+def get_ARIMAX_train_test_predictions(training_data, test_data, order, start, end, exog=None, typ='levels'):
+    training_data = training_data.to_frame()
+    test_data = test_data.to_frame()
+    results = ARIMA(training_data, order=order, exog=exog).fit()
+    forecast = results.predict(start=start, end=end, exog=exog, typ=typ).to_frame()
+    all_data = pd.concat([training_data, test_data], axis=0)
+    data_plus_forecast = pd.merge(left=all_data, right=forecast, how='outer', left_index=True, right_index=True)
+    data_plus_forecast.columns = ['data', 'forecast']
+    return forecast, data_plus_forecast
+
+def get_ARIMAX_train_test_MSE(df, data_col, pred_col, train_end, test_start, data_name=''):
+    train_error_df = df.loc[:train_end]
+    test_error_df = df.loc[test_start:]
+    for col in train_error_df.columns:
+        train_error_df = train_error_df[train_error_df[col].notnull()]
+    mse_train = mean_squared_error(train_error_df[data_col], train_error_df[pred_col])
+    mse_test = mean_squared_error(test_error_df[data_col], test_error_df[pred_col])
+    return mse_train, mse_test
+
+def get_ARIMAX_training_MSE(df, data_col, pred_col, data_name=''):
+    cols = df.columns
+    train_error_df = df.copy()
+    for col in cols:
+        train_error_df = train_error_df[train_error_df[col].notnull()]
+    mse = mean_squared_error(train_error_df[data_col], train_error_df[pred_col])
+    return mse
+    print('{name} MSE: {mse}'.format(name=data_name, mse=mse))
 
 def plot_data_plus_ARIMA_predictions(data, order, start, end, typ='levels',\
  figsize=(10,10), title='', ylabel='', xlabel=''):
