@@ -15,6 +15,10 @@ def index_to_datetime(series):
     """Converts pandas Series index to datetime"""
     series.index = pd.to_datetime(series.index, errors='coerce')
 
+def weekly_resample(data):
+    data = data.resample('W-MON').sum()
+    return data
+
 def downsample_data_week(data, fill_method='bfill'):
     downsampled = data.resample(rule='W').mean()
     downsampled.fillna(method=fill_method, inplace=True)
