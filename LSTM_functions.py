@@ -23,7 +23,7 @@ def create_dataset(data, num_steps=1):
     return np.array(dataX), np.array(dataY)
 
 def split_and_reshape_data(data, split_at=0.67, num_steps=1):
-    train_size = int(len(data) * 0.67)
+    train_size = int(len(data) * split_at)
     test_size = len(data) - train_size
     train, test = data[0:train_size,:], data[train_size:len(data),:]
     train, test = data[0:train_size,:], data[train_size:len(data),:]
@@ -42,7 +42,7 @@ def fit_sequential_LSTM(trainX, trainY, add_layers=4, input_shape=(1,1),\
     model.compile(loss=loss, optimizer=optimizer)
     model.fit(trainX, trainY, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
-def get_LSTM_predictions_and_inversions(trainX, testX):
+def get_LSTM_predictions(trainX, testX):
     "Get predictions for training and test data"
     trainPredict = model.predict(trainX)
     testPredict = model.predict(testX)

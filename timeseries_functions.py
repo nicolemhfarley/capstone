@@ -10,6 +10,7 @@ import statsmodels.api as sm
 #plt.rcParams.keys()
 params = {'figure.figsize': [8,8],'axes.grid.axis': 'both', 'axes.grid': True, 'axes.labelsize': 'Medium', 'font.size': 12.0, \
 'lines.linewidth': 2}
+# plt.rcParams.update(params)
 
 def index_to_datetime(series):
     """Converts pandas Series index to datetime"""
@@ -19,10 +20,19 @@ def weekly_resample(data):
     data = data.resample('W-MON').sum()
     return data
 
-def downsample_data_week(data, fill_method='bfill'):
-    downsampled = data.resample(rule='W').mean()
-    downsampled.fillna(method=fill_method, inplace=True)
-    return downsampled
+def plot_all_df_columns(df, col_nums, params, title='', xlabel=''):
+    i = 1
+    values = df.values
+    for col in col_nums:
+        plt.rcParams.update(params)
+        plt.subplot(len(col_nums), 1, i)
+        plt.plot(values[:, col])
+        plt.title(title)
+        plt.ylabel(dr_df.columns[col])
+        plt.xlabel(xlabel)
+        i += 1
+    plt.tight_layout()
+    plt.show()
 
 def plot_series(series, figsize=(10,10), xlabel='', ylabel='', plot_name='',\
                 v_lines=None):
@@ -115,7 +125,8 @@ def plot_decomposition(series, params, freq=None, title=''):
     plt.show()
 
 def plot_2_series_double_yaxis(x, y1, y2, figsize=(10,10), fontsize=12, title='', \
-                               y1_label='', y2_label='', xlabel=''):
+                               y1_label='', y2_label='', xlabel='', savefig=False,\
+                               figname='figure'):
     x = x
     y1 = y1
     y2 = y2
@@ -131,6 +142,8 @@ def plot_2_series_double_yaxis(x, y1, y2, figsize=(10,10), fontsize=12, title=''
     ax.legend(loc='upper left')
     ax2.legend(loc='lower right')
     plt.show()
+    if savefig == True:
+        fig.savefig(figname)
 ## plot detrended data using functions from matt drury tine series lecture w/ some
 # modifications
 

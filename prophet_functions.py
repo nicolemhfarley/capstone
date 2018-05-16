@@ -17,6 +17,8 @@ def get_prophet_test_mse(forecast, df_name, periods):
     print('MSE for {name} test set is {error}'.format(name=df_name, error=mse))
 
 def get_prophet_forecast(df, df_name, df_cols, date_hours_cols, pred_cols, periods):
+    """
+    """
     df.columns = df_cols
     df = df[date_hours_cols]
     df.columns = ['ds', 'y']
@@ -31,5 +33,14 @@ def get_prophet_forecast(df, df_name, df_cols, date_hours_cols, pred_cols, perio
     return model, forecast, df_pred
 
 def plot_prophet_forecast(model, forecast, df_name):
+    """Plots forecast and confidence interval from prophet model
+    input: model (Prophet Object), forecast: predictions, df_name: name
+    to use to label y-axis.
+    """
     model.plot(forecast, xlabel='Date', ylabel='{n} Hours'.format(n=df_name))
     model.plot_components(forecast)
+
+def prophet_forecast_to_csv(prediction_df, file_name):
+    """Save prophet predictions to csv file"""
+    prediction_df.columns = ['Date', 'True_Hours', 'Predicted_Hours', 'Lower_Limit', 'Upper_Limit']
+    prediction_df.to_csv('{}_predictions.csv'.format(file_name))
