@@ -73,9 +73,8 @@ def prep_predictions_for_plotting(data, trainPredict, testPredict, num_steps=1):
     return trainPredictPlot, testPredictPlot
 
 def plot_data_LSTM_predictions(data, trainPredictPlot, testPredictPlot,\
-                               params,title='', xlabel='', ylabel=''):
+                               title='', xlabel='', ylabel=''):
     fig = plt.figure()
-    plt.rcParams.update(params)
     plt.plot(scaler.inverse_transform(data), label='actual')
     plt.plot(trainPredictPlot, linestyle='--',  label='predicted')
     plt.plot(testPredictPlot, linestyle='--', label='predicted')

@@ -24,7 +24,6 @@ def plot_all_df_columns(df, col_nums, params, title='', xlabel=''):
     i = 1
     values = df.values
     for col in col_nums:
-        plt.rcParams.update(params)
         plt.subplot(len(col_nums), 1, i)
         plt.plot(values[:, col])
         plt.title(title)
@@ -57,9 +56,8 @@ def plot_series_save_fig(series, figsize=(10,10), xlabel='', ylabel='', plot_nam
     plt.savefig(figname)
     plt.show()
 
-def plot_series_and_differences(series, ax, num_diff, params, title=''):
+def plot_series_and_differences(series, ax, num_diff, title=''):
     """Plot raw timeseries data and specified number of differences"""
-    plt.rcParams.update(params)
     plt.xticks(rotation=40)
     ax[0].plot(series.index, series)
     ax[0].set_title('Raw series: {}'.format(title))
@@ -162,11 +160,13 @@ def fit_linear_trend(series):
     linear_trend = linear_trend_ols.predict(X)
     return linear_trend
 
-def plot_trend_data(ax, series, name=None):
+def plot_trend_data(ax, series):
     ax.plot(series.index, series)
 
-def plot_linear_trend(ax, series, name=None):
+def plot_linear_trend(ax, series, title='', xlabel='', ylabel=''):
     linear_trend = fit_linear_trend(series)
-    plot_trend_data(ax, name, series)
+    plot_trend_data(ax, title, series)
     ax.plot(series.index, linear_trend)
-    ax.set_title(name)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)

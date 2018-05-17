@@ -7,6 +7,9 @@ from statsmodels.tsa.arima_model import ARMA
 from statsmodels.tsa.arima_process import ArmaProcess
 
 ###  data = pandas Series
+# plt.rcParams.update(params)
+params = {'figure.figsize': [8,8],'axes.grid.axis': 'both', 'axes.grid': True, 'axes.labelsize': 'Medium', 'font.size': 12.0, \
+'lines.linewidth': 2}
 
 def get_AR_model(data, order):
     model = ARMA(data, order=order)
@@ -69,3 +72,24 @@ def plot_BIC_MA_model(data, max_order_plus_one):
     plt.xlabel('Order of {mod} Model'.format(mod='ARMA'))
     plt.ylabel('Baysian Information Criterion')
     plt.show()
+
+def get_MA_train_test_predictions(training_data, test_data, order, start, end):
+    training_data = training_data.to_frame()
+    test_data = test_data.to_frame()
+    results = ARMA(training_data, order=order).fit()
+    forecast = results.predict(start=start, end=end).to_frame()
+    all_data = pd.concat([training_data, test_data], axis=0)
+    data_plus_forecast = pd.merge(left=all_data, right=forecast, how='outer', left_index=True, right_index=True)
+    data_plus_forecast.columns = ['data', 'forecast']
+    return forecast, data_plus_forecast
+
+def get_MA_train_test_MSE(df, data_col, pred_col, train_end, test_start, data_name=''):
+    train_error_df = df.loc[:train_end]
+    test_error_df = df.loc[test_start:]
+    for col in train_error_df.columns:
+        train_error_df = train_error_df[train_error_df[col].notnull()]
+    mse_train = mean_squared_error(train_error_df[data_col], train_error_df[pred_col])
+    mse_test = mean_squared_error(test_error_df[data_col], test_error_df[pred_col])
+    print('train MSE: {}'.format(mse_train))
+    print('test MSE: {}'.format(mse_test))
+    return mse_train, mse_test
