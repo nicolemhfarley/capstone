@@ -56,7 +56,7 @@ def plot_MA_model(data, order, start, end, title='', xlabel='', ylabel=''):
     plt.show()
 
 ### Do these below functions actually work?  Not yet tested
-# check goodness of fit for a range of parameters for MA model
+# check goodness of fit for a range of parameters for MA model?
 def get_MA_model_order_BIC(data, max_order_plus_one):
     "Calculates Baysian Information Criterion for range of model orders"
     BIC_array = np.zeros(max_order_plus_one)
