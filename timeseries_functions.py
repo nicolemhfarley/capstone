@@ -17,6 +17,8 @@ def index_to_datetime(series):
     series.index = pd.to_datetime(series.index, errors='coerce')
 
 def weekly_resample(data):
+    """resamples data to weekly and sums values
+    """
     data = data.resample('W-MON').sum()
     return data
 
