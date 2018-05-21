@@ -35,7 +35,7 @@ def plot_all_df_columns(df, col_nums, params, title='', xlabel=''):
     plt.tight_layout()
     plt.show()
 
-def plot_series(series, figsize=(10,10), xlabel='', ylabel='', plot_name='',\
+def plot_series(series, figsize=None, xlabel='', ylabel='', plot_name='',\
                 v_lines=None):
     """Plots simple time series from Pandas Series"""
     ax = series.plot(figsize=figsize, linewidth = 3, fontsize=10, grid=True, rot=30)
