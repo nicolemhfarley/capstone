@@ -1,4 +1,4 @@
-
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -31,7 +31,7 @@ def get_provider_weekly_hours(provider):
     index_to_datetime(provider)
     provider = provider.resample('W-MON').sum()
     provider_hours = provider[1:]
-    provider_hours= provider_hours['Hours']
+    provider_hours = provider_hours['Hours']
     return provider_hours
 
 def get_number_unique_providers(provider):
@@ -90,10 +90,10 @@ def get_ARIMAX_forecast(csv_file, category_name, order, start_date, end_date, ou
     # output to csv file
     forecast.to_csv(outfile)
 
-# infile = './data/appointments_through_04-2018.csv'
-# provider_order =
-# start_date =
-# end_data =
-# start_predictions =
-# end_predictions =
-# outfile =
+if __name__ == '__main__':
+    infile = './data/appointments_through_04-2018.csv'
+    category_name = 'doctors'
+    order = (5,1,0)
+    start_date = '2015-01-12'
+    end_date = '2018-09-30'
+    outfile = 'dr_arimax_forecast.csv'
