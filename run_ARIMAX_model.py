@@ -1,4 +1,4 @@
-import sys
+# import sys
 import numpy as np
 import pandas as pd
 from statsmodels.graphics import tsaplots
@@ -87,7 +87,7 @@ def get_ARIMAX_forecast(csv_file, category_name, order, start_date, end_date, ou
     # rename columns
     forecast_df.columns = ['Hours', 'Predicted_Hours']
     # get predicted number of providers rounded up
-    forecast_df['Predicted_Num_Providers'] = round(forecast_df['Predicted_Hours'] / avg_provider_hours)
+    forecast_df['Predicted_Num_Providers'] = round((forecast_df['Predicted_Hours'] / avg_provider_hours),2)
     # get forecast
     forecast = forecast_df[start_date:end_date]#[['Predicted_Hours', 'Predicted_Num_Providers']]
     # keep only date in index, drop time
