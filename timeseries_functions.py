@@ -13,16 +13,22 @@ params = {'figure.figsize': [8,8],'axes.grid.axis': 'both', 'axes.grid': True, '
 # plt.rcParams.update(params)
 
 def index_to_datetime(series):
-    """Converts pandas Series index to datetime"""
+    """Converts pandas dataframe or series index to datetime"""
     series.index = pd.to_datetime(series.index, errors='coerce')
 
 def weekly_resample(data):
-    """resamples data to weekly and sums values
+    """resamples hours data to weekly and sums column values
     """
     data = data.resample('W-MON').sum()
     return data
 
-def plot_all_df_columns(df, col_nums, params, title='', xlabel=''):
+def plot_all_df_columns(df, col_nums, title='', xlabel=''):
+    """Plots the data in each column of a dataframe as subplots.
+    Inputs:
+        df: pandas DataFrame
+        col_nums: column index in integers
+        title/xlabel/ylabel: (str) labels for plot
+    """
     i = 1
     values = df.values
     for col in col_nums:
@@ -37,7 +43,13 @@ def plot_all_df_columns(df, col_nums, params, title='', xlabel=''):
 
 def plot_series(series, figsize=None, xlabel='', ylabel='', plot_name='',\
                 v_lines=None):
-    """Plots simple time series from Pandas Series"""
+    """Plots simple time series from Pandas Series
+    Inputs:
+        series: name of pandas Series
+        figsize: size of figure (x,y) dimensions
+        plot_name/xlabel/ylabel: (str) labels for plot
+        v_lines: location of vertical lines on the x axis
+    """
     ax = series.plot(figsize=figsize, linewidth = 3, fontsize=10, grid=True, rot=30)
     ax.set_title(plot_name, fontsize=18)
     ax.set_xlabel(xlabel, fontsize=15)
@@ -48,7 +60,14 @@ def plot_series(series, figsize=None, xlabel='', ylabel='', plot_name='',\
 
 def plot_series_save_fig(series, figsize=(10,10), xlabel='', ylabel='', plot_name='',\
                 v_lines=None, figname=None):
-    """Plots simple timeseries and saves to specified file"""
+    """Plots simple timeseries and saves to specified file
+    Inputs:
+        series: name of pandas Series
+        figsize: size of figure (x,y) dimensions
+        plot_name/xlabel/ylabel: (str) labels for plot
+        v_lines: location of vertical lines on the x axis
+        figname: (str) name for saving figure including file extension
+    """
     ax = series.plot(figsize=figsize, linewidth = 3, fontsize=10, grid=True, rot=30)
     ax.set_title(plot_name, fontsize=18)
     ax.set_xlabel(xlabel, fontsize=15)
@@ -59,7 +78,13 @@ def plot_series_save_fig(series, figsize=(10,10), xlabel='', ylabel='', plot_nam
     plt.show()
 
 def plot_series_and_differences(series, ax, num_diff, title=''):
-    """Plot raw timeseries data and specified number of differences"""
+    """Plot raw timeseries data and specified number of differences
+    Inputs:
+        series: name of pandas Series
+        ax: plt.axes
+        num_diffs: (int) the number of series differences that should be ploted
+        title: str) title for plot
+    """
     plt.xticks(rotation=40)
     ax[0].plot(series.index, series)
     ax[0].set_title('Raw series: {}'.format(title))
@@ -72,7 +97,15 @@ def plot_series_and_differences(series, ax, num_diff, title=''):
 
 def run_augmented_Dickey_Fuller_test(series, num_diffs=None):
     """Test for stationarity on raw timeseries data and specified number of differences
-    using augmented Dickey-Fuller test"""
+    using augmented Dickey-Fuller test
+    Inputs:
+        series: name of pandas Series
+        num_diffs: (int) the number of series differences to be tested
+    Outputs:
+        ADF statistic for each difference
+        1/5/10%: critical values for each difference
+        p-value for each difference
+    """
     test = sm.tsa.stattools.adfuller(series)
     print('ADF Statistic: {}'.format(test[0]))
     print('Critical values:')
@@ -96,6 +129,12 @@ def run_augmented_Dickey_Fuller_test(series, num_diffs=None):
 
 def plot_autocorrelation(series, params, lags, alpha=0.05, title=''):
     """Plots autocorrelation of timeseries
+    Inputs:
+        series: name of pandas Series
+        params: plt.rcParams
+        lags: (int) number of lags to include
+        alpha: significant level
+        title: (str) title for plot
     """
     plt.rcParams.update(params)
     acf_plot = tsaplots.plot_acf(series, lags=lags, alpha=alpha)
@@ -105,6 +144,12 @@ def plot_autocorrelation(series, params, lags, alpha=0.05, title=''):
 
 def plot_partial_autocorrelation(series, params, lags, alpha=0.05, title=''):
     """Plots partial autocorrelation of timeseries w/ datetime index
+    Inputs:
+        series: name of pandas Series
+        params: plt.rcParams
+        lags: (int) number of lags to include
+        alpha: significant level
+        title: (str) title for plot
     """
     plt.rcParams.update(params)
     acf_plot = tsaplots.plot_pacf(series, lags=lags, alpha=alpha)
@@ -113,11 +158,24 @@ def plot_partial_autocorrelation(series, params, lags, alpha=0.05, title=''):
     plt.show()
 
 def get_seasonal_decomposition(series, freq=None):
+    """Seasonally decomposes timeseries
+    Inputs:
+        series: pandas Series
+        freq: (int) frequency of the series
+    Outputs:
+        returns seasonal decomposition components
+    """
     decomp = sm.tsa.seasonal_decompose(series, freq=freq)
     return decomp.seasonal, decomp.trend, decomp.resid
 
 def plot_decomposition(series, params, freq=None, title=''):
-    """Plots observed, trend, seasonal, residuals of timeseries """
+    """Plots observed, trend, seasonal, residuals of timeseries
+    Inputs:
+        series: name of pandas Series
+        params: plt.rcParams
+        freq: (int) frequency of the series
+        title: (str) title for plot
+    """
     plt.rcParams.update(params)
     decomp = sm.tsa.seasonal_decompose(series, freq=freq)
     fig = decomp.plot()
@@ -127,6 +185,19 @@ def plot_decomposition(series, params, freq=None, title=''):
 def plot_2_series_double_yaxis(x, y1, y2, figsize=(10,10), fontsize=12, title='', \
                                y1_label='', y2_label='', xlabel='', savefig=False,\
                                figname='figure'):
+    """Plots 2 time series sharing same x x_axis
+    Inputs:
+        x: x values
+        y1: values for left y-axis
+        y2: values for right y-axis
+        figsize: size of figure (x,y)
+        title/x_label/y1_label/y2_label: (str) labels for plot
+        savefig: (bool) whether to save figure to file
+        figname: (str) name of figure w/ file extension
+    Outputs:
+        figure
+        file of saved figure
+    """
     x = x
     y1 = y1
     y2 = y2
@@ -163,9 +234,13 @@ def fit_linear_trend(series):
     return linear_trend
 
 def plot_trend_data(ax, series):
+    """Plots timeseries
+    """
     ax.plot(series.index, series)
 
 def plot_linear_trend(ax, series, title='', xlabel='', ylabel=''):
+    """Fits and plots linear trend to timeseries data
+    """
     linear_trend = fit_linear_trend(series)
     plot_trend_data(ax, title, series)
     ax.plot(series.index, linear_trend)
