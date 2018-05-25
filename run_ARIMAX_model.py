@@ -29,7 +29,6 @@ def get_provider_weekly_hours(provider):
     provider = provider.resample('W-MON').sum()
     provider_hours = provider[1:]
     provider_hours = provider_hours['Hours']
-    print(provider_hours)
     return provider_hours
 
 def get_number_unique_providers(provider):
@@ -38,7 +37,6 @@ def get_number_unique_providers(provider):
     index_to_datetime(num_provider)
     # drop incomplete first column
     num_provider = num_provider[1:]
-    print(num_provider)
     return num_provider
 
 def merge_hours_and_providers(hours, num_providers):
@@ -98,10 +96,10 @@ def get_ARIMAX_forecast(csv_file, category_name, order, start_date, end_date, ou
 if __name__ == '__main__':
     infile = './data/appointments_through_04-2018.csv'
     category_name = 'doctors'
-    order = (5,1,3)
+    order = (4,1,1)
     start_date = '2015-01-19'
     end_date = '2018-09-30'
     csv_out = 'test_arimax.csv'
     # get predictions data
-    get_ARIMAX_forecast(csv_file=infile, category_name='doctor', order=(5,1,3),\
+    get_ARIMAX_forecast(csv_file=infile, category_name='doctor', order=(4,1,1),\
     start_date='2015-01-19', end_date='2018-09-30', outfile='test_arimax_pred.csv')
