@@ -121,7 +121,8 @@ def plot_BIC_MA_model(data, max_order_plus_one):
         max_order_plus_one: (int) max q value +1 to test
     Outputs:
         graph of BIC values (y-axis) vs q values (x-axis)
-    """    array = get_MA_model_order_BIC(data, max_order_plus_one)
+    """
+    array = get_MA_model_order_BIC(data, max_order_plus_one)
     plt.plot(range(1, max_order_plus_one), array[1:max_order_plus_one], marker='o')
     plt.xlabel('Order of {mod} Model'.format(mod='ARMA'))
     plt.ylabel('Baysian Information Criterion')
