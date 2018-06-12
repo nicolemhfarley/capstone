@@ -1,16 +1,9 @@
-import sys
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from fbprophet import Prophet
 
-
-##### unfinished
-
 # import data from csv files for a specific provider cateogry
-# def get_provider_data(csv_file):
-#     provider_df = pd.read_csv(csv_file)
-#     return provider_df
 
 def index_to_datetime(series):
     """Converts pandas dataframe or series index to datetime"""
@@ -25,13 +18,12 @@ def get_cleaned_provider_data(csv_file, category_name):
     # group by specialty
     provider = appointment_df[appointment_df['Specialty'] == category_name]
     # convert appointment duration into hours
-    provider['Hours'] = provider['AppointmentDuration'] / 60
+    provider['Hours'] = provider['AppointmentDuration'] / 60.0
     # return provider series
     return provider
 
 def get_provider_weekly_hours(provider):
-    provider_hours = provider.copy()
-    provider_hours = provider.groupby(provider.index.date)['Hours'].sum()
+    provider_hours = provider['Hours']
     index_to_datetime(provider)
     provider = provider.resample('W-MON').sum()
     provider_hours = provider[1:]
@@ -39,7 +31,6 @@ def get_provider_weekly_hours(provider):
     return provider_hours
 
 def get_number_unique_providers(provider):
-    num_provider = provider.copy()
     num_provider = provider['Provider'].resample('W-MON', lambda x: x.nunique())
     # set index to to_datetime
     index_to_datetime(num_provider)
@@ -71,7 +62,7 @@ def get_holidays():
     holidays = pd.concat([christmas, thanksgiving, new_years])
     return holidays
 
-def get_prophet_forecast_w_holidays(df, df_cols, date_hours_cols,\
+def get_prophet_forecast_w_holidays(df, date_hours_cols,\
         pred_cols, periods, holidays, mean_hours_provider):
     """
     Inputs:
@@ -87,55 +78,46 @@ def get_prophet_forecast_w_holidays(df, df_cols, date_hours_cols,\
         forecast
         df with original data plus predictions and upper/lower predictions
     """
-    df.columns = df_cols
-    df = df[date_hours_cols]
-    df.columns = ['ds', 'y']
+    df['ds'] = df.index
+    df['y'] = df['Hours']
+    df = df[['ds', 'y']]
     model = Prophet(holidays=holidays)
     model.fit(df)
     future = model.make_future_dataframe(periods=periods)
     forecast = model.predict(future)
+    forecast.index = forecast['ds']
     df_pred = pd.concat([df, forecast[pred_cols]], axis=1)
     # make num providers column
     df_pred['Predicted_num_Providers'] = round(df_pred['yhat'] / mean_hours_provider, 1)
-    # predictions = forecast.iloc[-periods:]
-    # get_prophet_training_mse(df_pred, df_name, periods)
-    # get_prophet_test_mse(df_pred, df_name, periods)
+    predictions = forecast.iloc[-periods:]
     return model, forecast, df_pred
 
-def prophet_forecast_to_csv(df_pred, file_name):
-    """Save prophet predictions in dataframe format to csv file"""
-    prediction_df.columns = ['Date', 'True_Hours', 'Predicted_Hours', 'Lower_Limit',\
-     'Upper_Limit', 'Predicted_num_Providers']
-    prediction_df.to_csv('{}_predictions.csv'.format(file_name))
-
-def run_prophet_forecast(csv_file, category_name, date_hours_cols,\
-        pred_cols, periods, holidays, mean_hours_provider, out_csv):
-    # import provider data
+def run_Prophet_model(df_cols):
+        # import provider data
     provider = get_cleaned_provider_data(csv_file, category_name)
-    # get weekly hours data
+        # get weekly hours data
     provider_hours = get_provider_weekly_hours(provider)
-    # get number of providers data
+        # get number of providers data
     num_provider = get_number_unique_providers(provider)
-    # merge provider dataframes
-    provider = merge_hours_and_providers(provider_hours, num_provider)
-    # get hours per provider
-    provider_df, avg_provider_hours = get_hours_per_provider(provider)
+        # merge provider dataframes
+    providers = merge_hours_and_providers(provider_hours, num_provider)
+        # get hours per provider
+    provider_df, avg_provider_hours = get_hours_per_provider(providers)
     holidays = get_holidays()
-    # get prophet model, forecast, predictions dataframe
+        # get prophet model, forecast, predictions dataframe
     model, forecast, df_pred = get_prophet_forecast_w_holidays(provider_df,\
-        df_cols, date_hours_cols, pred_cols, periods, holidays)
-    prophet_forecast_to_csv(df_pred, outfile)
-
-
+            date_hours_cols, pred_cols, periods, holidays, avg_provider_hours)
+    df_pred.columns = df_cols
+    df_pred.to_csv(outfile)
 
 if __name__ == '__main__':
-    infile = './data/appointments_through_04-2018.csv'
-    df_cols = ['date', 'Number_Providers', 'Hours', 'Hours_per_Provider']
+    csv_file = './data/appointments_through_04-2018.csv'
+    df_cols = ['date', 'Hours', 'Predicted Hours', 'Lower Limit', 'Upper Limit',\
+    'Predicted Number Providers']
     date_hours_cols = ['date', 'Hours']
+    category_name = 'RN/PA'
     periods = 90
     pred_cols = ['yhat', 'yhat_lower', 'yhat_upper']
-    # start_date = '2015-01-12'
-    # end_date = '2018-09-30'
-    outfile = 'dr_test_prophet_forecast.csv'
-    run_prophet_forecast(csv_file=infile, category_name='doctors', date_hours_cols=date_hours_cols,\
-            pred_cols=pred_cols, periods=90, holidays, mean_hours_provider, out_csv=outfile)
+    outfile = './data/RNPA_prophet_forecast.csv'
+
+    run_Prophet_model(df_cols)
