@@ -95,11 +95,12 @@ def get_ARIMAX_forecast(csv_file, category_name, order, start_date, end_date, ou
 
 if __name__ == '__main__':
     infile = './data/appointments_through_04-2018.csv'
-    category_name = 'doctors'
-    order = (4,1,2)
-    start_date = '2015-01-19'
-    end_date = '2018-09-30'
-    csv_out = 'test_arimax.csv'
     # get predictions data
-    get_ARIMAX_forecast(csv_file=infile, category_name='doctor', order=(4,1,1),\
-    start_date='2015-01-19', end_date='2018-09-30', outfile='test_arimax_pred.csv')
+    get_ARIMAX_forecast(csv_file=infile, category_name='doctor', order=(4,1,2),\
+    start_date='2015-01-26', end_date='2018-09-30', outfile='./data/test_arimax_pred.csv')
+
+    # category_name = 'doctors'
+    # order = (4,1,2)
+    # start_date = '2015-01-19'
+    # end_date = '2018-09-30'
+    # csv_out = 'test_arimax.csv'

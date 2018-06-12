@@ -215,7 +215,7 @@ def plot_2_series_double_yaxis(x, y1, y2, figsize=(10,10), fontsize=12, title=''
     plt.show()
     if savefig == True:
         fig.savefig(figname)
-        
+
 ## plot detrended data using functions from matt drury tine series lecture w/ some
 # modifications
 
